@@ -2,10 +2,9 @@
 
 import numpy as np
 
-src = open("../traces/out.tr","r")
+src = open("out.tr","r")
 
 pertes = []
-nb_pertes = 0
 for i in range(25):
 	pertes.append([i] * 25)
 
@@ -14,23 +13,33 @@ for line in src:
 
 	if event[0] == 'd':
 		pertes[int(event[2])][int(event[3])]+=1
-		nb_pertes++
 
-imax = 0
-jmax = 0
-valmax = 0
+imax = [0]*3
+jmax = [0]*3
+valmax = [0]*3
 
-for i in range(25):
-	for j in range(25):
-		if pertes[i][j] > valmax:
-			valmax = pertes[i][j]
-			imax = i
-			jmax = j
+for i in range(len(pertes)):
+	for j in range(len(pertes[i])):
+		if pertes[i][j] > valmax[0]:
+			valmax[0] = pertes[i][j]
+			imax[0] = i
+			jmax[0] = j
+		elif pertes[i][j] > valmax[1]:
+			valmax[1] = pertes[i][j]
+			imax[1] = i
+			jmax[1] = j
+		elif pertes[i][j] > valmax[2]:
+			valmax[2] = pertes[i][j]
+			imax[2] = i
+			jmax[2] = j
+
 
 dst  = open("info.txt", "w")
 
-dst.write("Pertes totales %s\n" %(nb_pertes))
-dst.write("Le lien le plus faible est %s %s avec %s pertes\n" %(imax,jmax,valmax))
+dst.write("Les liens les plus faibles sont:\n")
+dst.write("\t%s-%s avec %s pertes\n" %(imax[0], jmax[0], valmax[0]))
+dst.write("\t%s-%s avec %s pertes\n" %(imax[1], jmax[1], valmax[1]))
+dst.write("\t%s-%s avec %s pertes\n" %(imax[2], jmax[2], valmax[2]))
 
 src.close()
 dst.close()

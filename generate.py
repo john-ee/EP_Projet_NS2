@@ -61,16 +61,13 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ftp_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ftp_%s_%s set type_ FTP\n" %(traf[0], traf[1]))
 		random_traf = 0
+		offset = math.floor(ftp_traf * 0.0001)
 
 		while random_traf < ftp_traf:
 			zipf = np.random.zipf(shape)
-			if zipf < ftp_traf/1000:
-				zipf *= 1000
-			if zipf < ftp_traf/100:
-				zipf *= 100
 			instant = rand.random() * (fin - debut) + debut
-			dst.write("$ns at %s \"$ftp_%s_%s send %s\"\n" %(instant, traf[0], traf[1], zipf))
-			random_traf += zipf
+			dst.write("$ns at %s \"$ftp_%s_%s send %s\"\n" %(instant, traf[0], traf[1], zipf*1500 + offset))
+			random_traf += zipf*1500 + offset
 
 
 
@@ -83,7 +80,7 @@ src_traf = open("traff.traf","r")
 dest  = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
-dest.write("set f [open ../traces/out.tr w]\n$ns trace-all $f\n")
+dest.write("set f [open out.tr w]\n$ns trace-all $f\n")
 dest.write("proc finish {} {\n")
 dest.write("    global ns f\n")
 dest.write("    $ns flush-trace\n")
@@ -93,7 +90,7 @@ dest.write("}\n\n")
 
 topologie(src_topo, dest)
 
-trafic(src_traf, dest, 300, 0.05, 0.05, 1.5)
+trafic(src_traf, dest, 300, 0.05, 0.05, 2)
 
 src_topo.close()
 src_traf.close()

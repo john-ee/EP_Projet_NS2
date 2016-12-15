@@ -3,8 +3,8 @@
 import time
 import os
 
-timer = open("info.txt", "w")
+timer = open("../traces/info.txt", "w")
 start = time.time()
-os.system("ns simulation.tcl")
+os.system("ns ../traces/simulation.tcl")
 timer.write("Temps d'execution de la simulation : %s\n" %(time.time() - start))
 timer.close()
