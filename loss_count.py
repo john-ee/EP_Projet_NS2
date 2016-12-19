@@ -34,7 +34,7 @@ for i in range(len(pertes)):
 			jmax[2] = j
 
 
-dst  = open("info.txt", "w")
+dst  = open("info.txt", "a")
 
 dst.write("Les liens les plus faibles sont:\n")
 dst.write("\t%s-%s avec %s pertes\n" %(imax[0], jmax[0], valmax[0]))
