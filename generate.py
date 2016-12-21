@@ -3,9 +3,7 @@
 import scipy.special as sps
 import numpy as np
 import math
-import random as rand 
-import time
-import os
+import random as rand
 
 def topologie(src,dst):
 
@@ -57,17 +55,19 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns at %s \"$p_%s_%s start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s stop\"\n\n" %(fin, traf[0], traf[1]))
 
-		dst.write("set ftp_%s_%s [new Application/FTP]\n" %(traf[0], traf[1]))
-		dst.write("$ftp_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
-		dst.write("$ftp_%s_%s set type_ FTP\n" %(traf[0], traf[1]))
 		random_traf = 0
+		i = 0
 		offset = math.floor(ftp_traf * 0.0001)
 
 		while random_traf < ftp_traf:
 			zipf = np.random.zipf(shape)
 			instant = rand.random() * (fin - debut) + debut
-			dst.write("$ns at %s \"$ftp_%s_%s send %s\"\n" %(instant, traf[0], traf[1], zipf*1500 + offset))
+			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
+			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1]))
+			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf*1500 + offset))
 			random_traf += zipf*1500 + offset
+			i+=1
 
 
 
@@ -80,7 +80,7 @@ src_traf = open("traff.traf","r")
 dest  = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
-dest.write("set f [open out.tr w]\n$ns namtrace-all $f\n")
+dest.write("set f [open out.tr w]\n$ns trace-all $f\n")
 dest.write("proc finish {} {\n")
 dest.write("    global ns f\n")
 dest.write("    $ns flush-trace\n")
