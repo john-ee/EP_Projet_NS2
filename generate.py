@@ -92,10 +92,11 @@ dest  = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
 dest.write("set f [open out.tr w]\n$ns trace-all $f\n")
+dest.write("set nf [open out.nam w]\n$ns namtrace-all $nf\n")
 dest.write("proc finish {} {\n")
-dest.write("    global ns f\n")
+dest.write("    global ns f nf\n")
 dest.write("    $ns flush-trace\n")
-dest.write("    close $f\n")
+dest.write("    close $f\n    close $nf\n")
 dest.write("    exit 0\n")
 dest.write("}\n\n")
 
