@@ -35,7 +35,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		
 		traf = line.rstrip('\n\r').split(" ")
 
-		pareto_traf = math.floor(0.85 * float(traf[2])) * conv
+		pareto_traf = math.floor(0.85 * float(traf[2]))
 		ftp_traf = ( int(traf[2]) - pareto_traf ) * conv
 
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
@@ -46,7 +46,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p_%s_%s [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
-		rate = pareto_traf / sim_time
+		rate = pareto_traf * conv / sim_time
 		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
 		dst.write("$p_%s_%s set rate_ %s\n" %(traf[0], traf[1], rate))
@@ -71,7 +71,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("$ns attach_agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 
 			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
-			dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1], i))
+			dst.write("$ns attach-agent $n%s $sink_%s_%s_%s\n" %(traf[1], traf[0], traf[1], i))
 			dst.write("$ns connect $tcp_%s_%s_%s $sink_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
