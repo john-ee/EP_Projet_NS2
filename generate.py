@@ -36,7 +36,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		traf = line.rstrip('\n\r').split(" ")
 
 		pareto_traf = math.floor(0.85 * float(traf[2]))
-		ftp_traf = ( int(traf[2]) - pareto_traf ) * conv_g_k
+		ftp_traf = ( int(traf[2]) - pareto_traf ) * conv
 
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
