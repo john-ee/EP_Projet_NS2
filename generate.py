@@ -76,7 +76,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
 			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, (zipf + offset)*1000)
 
-			random_traf += (zipf + offset)*1000
+			random_traf += zipf*1000 + offset*1000
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
