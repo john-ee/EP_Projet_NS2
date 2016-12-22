@@ -68,15 +68,15 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
 			dst.write("$tcp_%s_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1], i))
-			dst.write("$ns attach_agent $n%s $tcp_%s_%s_%s " %(traf[0], traf[0], traf[1], i))
+			dst.write("$ns attach_agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 			dst.write("$ns connect $tcp_%s_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1]))
 
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, (zipf + offset)*1000))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf*1000))
 
-			random_traf += (zipf + offset) * 1000
+			random_traf += zipf * 1000
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
