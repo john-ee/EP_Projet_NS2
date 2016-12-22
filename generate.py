@@ -74,9 +74,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf*1000))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf*1000 + offset))
 
-			random_traf += zipf * 1000
+			random_traf += zipf * 1000 + offset
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
