@@ -1,0 +1,1 @@
+Temps d'execution de la simulation : 50.2910571098
