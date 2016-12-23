@@ -29,7 +29,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	conv = 1000
+	conv = 1
 
 	for line in src:
 		
@@ -49,7 +49,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		rate = pareto_traf / sim_time
 		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
-		dst.write("$p_%s_%s set rate_ %s Mb\n" %(traf[0], traf[1], rate))
+		dst.write("$p_%s_%s set rate_ %s Gb\n" %(traf[0], traf[1], rate))
 		dst.write("$p_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1]))
 		dst.write("$p_%s_%s set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
@@ -79,9 +79,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s Mb\"\n" %(instant, traf[0], traf[1], i, zipf + offset))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s Gb\"\n" %(instant, traf[0], traf[1], i, zipf))
 
-			random_traf += zipf + offset
+			random_traf += zipf
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
