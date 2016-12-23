@@ -20,7 +20,7 @@ def topologie(src,dst):
 			nodes.append(topo[1])
 			dst.write("set n%s [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n%s $n%s %sGb %sms DropTail\n" %(topo[0], topo[1],topo[2],topo[3]))
+		dst.write("$ns duplex-link $n%s $n%s %sKb %sms DropTail\n" %(topo[0], topo[1],topo[2],topo[3]))
 		dst.write("$ns queue-limit $n%s $n%s 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
@@ -29,7 +29,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	conv = 1
+	conv = 1000
 
 	for line in src:
 		
@@ -49,7 +49,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		rate = pareto_traf / sim_time
 		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
-		dst.write("$p_%s_%s set rate_ %s Gb\n" %(traf[0], traf[1], rate))
+		dst.write("$p_%s_%s set rate_ %s Kb\n" %(traf[0], traf[1], rate))
 		dst.write("$p_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1]))
 		dst.write("$p_%s_%s set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
@@ -79,7 +79,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf*1000*1000*1000))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf))
 
 			random_traf += zipf
 			i+=1
