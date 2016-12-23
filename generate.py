@@ -59,9 +59,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 		random_traf = 0
 		i = 0
-		offset = math.floor(ftp_traf * 1 / conv)
+		offset = math.floor(ftp_traf / conv / conv)
 
-		#print "%s %s %s" %(pareto_traf, ftp_traf, offset)
+		print "%s %s %s" %(pareto_traf, ftp_traf, offset)
 
 		while random_traf < ftp_traf:
 
@@ -70,7 +70,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
 			dst.write("$tcp_%s_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1], i))
-			dst.write("$ns attach_agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
+			dst.write("$ns attach-agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 
 			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
 			dst.write("$ns attach-agent $n%s $sink_%s_%s_%s\n" %(traf[1], traf[0], traf[1], i))
