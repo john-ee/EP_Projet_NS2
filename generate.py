@@ -61,7 +61,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		i = 0
 		offset = math.floor(ftp_traf / conv / conv)
 
-		print "%s %s %s" %(pareto_traf, ftp_traf, offset)
+		#print "%s %s %s" %(pareto_traf, ftp_traf, offset)
 
 		while random_traf < ftp_traf:
 
