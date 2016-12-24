@@ -32,6 +32,12 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	rep = 10
 	conv = 10
 
+	dst.write("set Agent/TCP window_ 15\nset Agent/TCP packetSize_ 15\n")
+	dst.write("set Agent/Traffic/Pareto packetSize_ 15\n")
+	dst.write("set Agent/Traffic/Pareto burst_time_ %s\n" %(burst))
+	dst.write("set Agent/Traffic/Pareto idle_time_ %s\n" %(idle))
+	dst.write("set Agent/Traffic/Pareto shape_ %s\n" %(shape))
+
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
@@ -43,19 +49,13 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
 		dst.write("set tcp_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$tcp_%s_%s set packetSize_ 15\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $tcp_%s_%s\n" %(traf[0], traf[0], traf[1]))
 		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p_%s_%s [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
 		rate = pareto_traf / sim_time
-		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
-		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
 		dst.write("$p_%s_%s set rate_ %s Mb\n" %(traf[0], traf[1], rate))
-		dst.write("$p_%s_%s set packetSize_ 15\n" %(traf[0], traf[1]))
-		dst.write("$p_%s_%s set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
-
 		dst.write("$ns at %s \"$p_%s_%s start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s stop\"\n\n" %(fin, traf[0], traf[1]))
 
@@ -71,7 +71,6 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			instant = rand.random() * (fin - debut) + debut
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
-			dst.write("$tcp_%s_%s_%s set packetSize_ 15\n" %(traf[0], traf[1], i))
 			dst.write("$ns attach-agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 
 			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
