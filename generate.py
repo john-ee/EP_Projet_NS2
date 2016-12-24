@@ -82,7 +82,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
 			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * conv))
 
-			random_traf += zipf * 1000
+			random_traf += zipf * conv
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
@@ -93,9 +93,9 @@ src_topo = open("topo.top","r")
 src_traf = open("traff.traf","r")
 dest  = open("simulation.tcl","w")
 
-dest.write("set ns [new Simulator]\n")
-dest.write("set f [open out.tr w]\n$ns trace-all $f\n")
-dest.write("set nf [open out.nam w]\n$ns namtrace-all $nf\n")
+dest.write("set ns [new Simulator]\n\n")
+dest.write("set f [open out.tr w]\n$ns trace-all $f\n\n")
+dest.write("set nf [open out.nam w]\n$ns namtrace-all $nf\n\n")
 dest.write("proc finish {} {\n")
 dest.write("    global ns f nf\n")
 dest.write("    $ns flush-trace\n")
