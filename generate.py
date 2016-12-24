@@ -20,7 +20,7 @@ def topologie(src,dst):
 			nodes.append(topo[1])
 			dst.write("set n%s [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n%s $n%s %sMb %sms DropTail\n" %(topo[0], topo[1],topo[2],topo[3]))
+		dst.write("$ns duplex-link $n%s $n%s [expr%s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], int(topo[3])))
 		dst.write("$ns queue-limit $n%s $n%s 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
@@ -29,20 +29,20 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	conv = 1000
+	conv = 10 #Representation 1Gb par 10Mb
 
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
-		data = int(float(traf[2]) * 1000)
+		data = int(float(traf[2]) * conv)
 
-		pareto_traf = int(math.floor(0.85 * data))
-		ftp_traf = int(( data - pareto_traf ))
+		pareto_traf = int(math.floor(0.85 * data)) #On garde en Mb
+		ftp_traf = int(( data - pareto_traf ) * 1000) #Pour avoir en Kb
 
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
 		dst.write("set tcp_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$tcp_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1]))
+		dst.write("$tcp_%s_%s set packetSize_ 15\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $tcp_%s_%s\n" %(traf[0], traf[0], traf[1]))
 		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
@@ -50,8 +50,8 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		rate = pareto_traf / sim_time
 		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
-		dst.write("$p_%s_%s set rate_ %s Kb\n" %(traf[0], traf[1], rate))
-		dst.write("$p_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1]))
+		dst.write("$p_%s_%s set rate_ %s Mb\n" %(traf[0], traf[1], rate))
+		dst.write("$p_%s_%s set packetSize_ 15\n" %(traf[0], traf[1]))
 		dst.write("$p_%s_%s set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
@@ -70,7 +70,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			instant = rand.random() * (fin - debut) + debut
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
-			dst.write("$tcp_%s_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1], i))
+			dst.write("$tcp_%s_%s_%s set packetSize_ 15\n" %(traf[0], traf[1], i))
 			dst.write("$ns attach-agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 
 			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
@@ -80,9 +80,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * 1000))
 
-			random_traf += zipf
+			random_traf += zipf * 1000 #on envoie en les donnes en Kb
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
