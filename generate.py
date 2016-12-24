@@ -68,7 +68,6 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 		while random_traf < ftp_traf:
 
-			#generent data à envoyer en Mb
 			zipf = np.random.zipf(shape) 
 			instant = rand.random() * (fin - debut) + debut
 
