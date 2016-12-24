@@ -20,7 +20,7 @@ def topologie(src,dst):
 			nodes.append(topo[1])
 			dst.write("set n%s [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n%s $n%s [expr%s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], int(topo[3])))
+		dst.write("$ns duplex-link $n%s $n%s [expr%s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
 		dst.write("$ns queue-limit $n%s $n%s 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
