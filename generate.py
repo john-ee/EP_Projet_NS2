@@ -29,15 +29,17 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	conv = 10 #Representation 1Gb par 10Mb
+	rep = 10 #Representation 1Gb par 10Mb
+	conv = 10 #Passage de Mb en 100aine de Kb (1Mb = 10 100aine de Kb)
 
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
-		data = int(float(traf[2]) * conv)
+		data = int(float(traf[2]) * rep)
 
-		pareto_traf = int(math.floor(0.85 * data)) #On garde en Mb
-		ftp_traf = int(( data - pareto_traf ) * 1000) #Pour avoir en Kb
+		#On garde en Mb
+		pareto_traf = int(math.floor(0.85 * data)) 
+		ftp_traf = int(( data - pareto_traf))
 
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
@@ -60,13 +62,13 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 		random_traf = 0
 		i = 0
-		offset = int(math.floor(ftp_traf / conv))
+		offset = int(math.floor(ftp_traf / rep))
 
 		print "%s %s %s" %(pareto_traf, ftp_traf, offset)
 
 		while random_traf < ftp_traf:
 
-			zipf = np.random.zipf(shape)
+			zipf = np.random.zipf(shape) #generent data à envouer en Mb
 			instant = rand.random() * (fin - debut) + debut
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
@@ -80,9 +82,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * 1000))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * conv))
 
-			random_traf += zipf * 1000 #on envoie en les donnes en Kb
+			random_traf += zipf 
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
