@@ -34,7 +34,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
-		data = int(float(traf[2]))
+		data = int(float(traf[2]) * 1000)
 
 		pareto_traf = int(math.floor(0.85 * data))
 		ftp_traf = int(( data - pareto_traf ))
@@ -80,9 +80,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * conv))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf))
 
-			random_traf += zipf * conv
+			random_traf += zipf
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
