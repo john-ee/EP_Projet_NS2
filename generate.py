@@ -68,7 +68,8 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 		while random_traf < ftp_traf:
 
-			zipf = np.random.zipf(shape) #generent data à envouer en Mb
+			#generent data à envoyer en Mb
+			zipf = np.random.zipf(shape) 
 			instant = rand.random() * (fin - debut) + debut
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
