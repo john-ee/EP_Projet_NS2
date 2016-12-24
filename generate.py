@@ -50,7 +50,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$p_%s_%s set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p_%s_%s set idle_time_ %s\n" %(traf[0], traf[1], idle))
 		dst.write("$p_%s_%s set rate_ %s Kb\n" %(traf[0], traf[1], rate))
-		dst.write("$p_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1]))
+		dst.write("$p_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1]))
 		dst.write("$p_%s_%s set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
