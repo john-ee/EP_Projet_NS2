@@ -29,15 +29,14 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	rep = 10 #Representation 1Gb par 10Mb
-	conv = 10 #Passage de Mb en 100aine de Kb (1Mb = 10 100aine de Kb)
+	rep = 10
+	conv = 10
 
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
 		data = int(float(traf[2]) * rep)
 
-		#On garde en Mb
 		pareto_traf = int(math.floor(0.85 * data)) 
 		ftp_traf = int(( data - pareto_traf))
 
