@@ -34,7 +34,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
-		data = int(float(traf[2])) * conv
+		data = int(float(traf[2]))
 
 		pareto_traf = int(math.floor(0.85 * data))
 		ftp_traf = int(( data - pareto_traf ))
