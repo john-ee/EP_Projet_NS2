@@ -20,7 +20,7 @@ def topologie(src,dst):
 			nodes.append(topo[1])
 			dst.write("set n%s [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n%s $n%s %sKb %sms DropTail\n" %(topo[0], topo[1],topo[2],topo[3]))
+		dst.write("$ns duplex-link $n%s $n%s %sMb %sms DropTail\n" %(topo[0], topo[1],topo[2],topo[3]))
 		dst.write("$ns queue-limit $n%s $n%s 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
@@ -34,14 +34,15 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
+		data = int(float(traf[2])) * conv
 
-		pareto_traf = math.floor(0.85 * float(traf[2]) * conv)
-		ftp_traf = ( int(traf[2]) * conv - pareto_traf )
+		pareto_traf = math.floor(0.85 * data)
+		ftp_traf = ( data - pareto_traf )
 
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
 		dst.write("set tcp_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$tcp_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1]))
+		dst.write("$tcp_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $tcp_%s_%s\n" %(traf[0], traf[0], traf[1]))
 		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
@@ -69,7 +70,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			instant = rand.random() * (fin - debut) + debut
 
 			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
-			dst.write("$tcp_%s_%s_%s set packetSize_ 1500\n" %(traf[0], traf[1], i))
+			dst.write("$tcp_%s_%s_%s set packetSize_ 1.5\n" %(traf[0], traf[1], i))
 			dst.write("$ns attach-agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
 
 			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
@@ -79,9 +80,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * conv))
 
-			random_traf += zipf
+			random_traf += zipf * 1000
 			i+=1
 
 	dst.write("$ns at %s \"finish\"\n" %(sim_time))
