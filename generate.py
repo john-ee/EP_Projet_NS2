@@ -106,7 +106,7 @@ topologie(src_topo, dest)
 
 trafic(src_traf, dest, 300, 0.05, 0.05, 2)
 
-dest.write("$ns at %s \"finish\"\n" %(sim_time))
+dest.write("$ns at 300 \"finish\"\n")
 dest.write("puts \"Starting Simulation...\"\n$ns run\n")
 
 src_topo.close()
