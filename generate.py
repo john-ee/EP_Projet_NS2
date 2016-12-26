@@ -14,14 +14,14 @@ def topologie(src,dst):
 
 		if topo[0] not in nodes:
 			nodes.append(topo[0])
-			dst.write("set n%s [$ns node]\n" %(topo[0]))
+			dst.write("set n(%s) [$ns node]\n" %(topo[0]))
 
 		if topo[1] not in nodes:
 			nodes.append(topo[1])
-			dst.write("set n%s [$ns node]\n" %(topo[1]))
+			dst.write("set n(%s) [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n%s $n%s [expr %s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
-		dst.write("$ns queue-limit $n%s $n%s 10\n" %(topo[0],topo[1]))
+		dst.write("$ns duplex-link $n(%s) $n(%s) [expr %s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
+		dst.write("$ns queue-limit $n(%s) $n(%s) 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
 
@@ -51,17 +51,17 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		nb_cycle = (burst + idle) / sim_time
 		rate = int( math.floor( ( pareto_traf / nb_cycle ) / burst ) )
 
-		dst.write("set sink_%s_%s [new Agent/UDP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
-		dst.write("set udp_%s_%s [new Agent/UDP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n%s $udp_%s_%s\n" %(traf[0], traf[0], traf[1]))
-		dst.write("$ns connect $udp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
+		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
+		dst.write("set udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
+		dst.write("$ns attach-agent $n($%s) $udp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
+		dst.write("$ns connect $udp($%s,$%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
-		dst.write("set p_%s_%s [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
-		dst.write("$p_%s_%s set rate_ %s M\n" %(traf[0], traf[1], rate))
-		dst.write("$p_%s_%s attach-agent $udp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
-		dst.write("$ns at %s \"$p_%s_%s start\"\n\n" %(debut, traf[0], traf[1]))
-		dst.write("$ns at %s \"$p_%s_%s stop\"\n\n" %(fin, traf[0], traf[1]))
+		dst.write("set p(%s,%s) [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
+		dst.write("$p(%s,%s) set rate_ %s M\n" %(traf[0], traf[1], rate))
+		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("$ns at %s \"$p(%s,%s) start\"\n\n" %(debut, traf[0], traf[1]))
+		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
 
 		random_traf = 0
 		i = 0
@@ -74,15 +74,15 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			zipf = np.random.zipf(shape) 
 			instant = rand.random() * (fin - debut) + debut
 
-			dst.write("set tcp_%s_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1], i))
-			dst.write("$ns attach-agent $n%s $tcp_%s_%s_%s\n" %(traf[0], traf[0], traf[1], i))
+			dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
+			dst.write("$ns attach-agent $n%s $tcp(%s,%s,%s)\n" %(traf[0], traf[0], traf[1], i))
 
-			dst.write("set sink_%s_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
-			dst.write("$ns attach-agent $n%s $sink_%s_%s_%s\n" %(traf[1], traf[0], traf[1], i))
-			dst.write("$ns connect $tcp_%s_%s_%s $sink_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
+			dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
+			dst.write("$ns attach-agent $n%s $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
+			dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 
-			dst.write("set ftp_%s_%s_%s [$tcp_%s_%s_%s attach_app FTP]\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s M\"\n\n" %(instant, traf[0], traf[1], i, zipf))
+			dst.write("set ftp(%s,%s,%s) [$tcp(%s,%s,%s) attach_app FTP]\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
+			dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s M\"\n\n" %(instant, traf[0], traf[1], i, zipf))
 
 			random_traf += zipf 
 			i+=1
@@ -93,7 +93,12 @@ src_traf = open("traff.traf","r")
 dest = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n\n")
+dest.write("set f [open out.tr w]\n$ns trace-all $f\n\n")
+dest.write("set nf [open out.nam w]\n$ns namtrace-all $nf\n\n")
 dest.write("proc finish {} {\n")
+dest.write("    global ns f nf\n")
+dest.write("    $ns flush-trace\n")
+dest.write("    close $f\n    close $nf\n")
 dest.write("    exit 0\n")
 dest.write("}\n\n")
 
