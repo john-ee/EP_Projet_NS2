@@ -50,15 +50,15 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		nb_cycle = (burst + idle) / sim_time
 		rate = int( math.floor( ( pareto_traf / nb_cycle) / burst ) )
 
-		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
+		dst.write("set sink_%s_%s [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
-		dst.write("set tcp_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n%s $tcp_%s_%s\n" %(traf[0], traf[0], traf[1]))
-		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("set udp_%s_%s [new Agent/UDP]\n" %(traf[0], traf[1]))
+		dst.write("$ns attach-agent $n%s $udp_%s_%s\n" %(traf[0], traf[0], traf[1]))
+		dst.write("$ns connect $udp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p_%s_%s [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
 		dst.write("$p_%s_%s set rate_ %s M\n" %(traf[0], traf[1], rate))
-		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("$p_%s_%s attach-agent $udp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s stop\"\n\n" %(fin, traf[0], traf[1]))
 
