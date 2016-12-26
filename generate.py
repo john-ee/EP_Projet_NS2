@@ -33,6 +33,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	conv = 10000
 
 	dst.write("set Agent/TCP window_ 15\nset Agent/TCP packetSize_ 15\n")
+	dst.write("set Agent/UDP packetSize_ 15\n")
 	dst.write("set Agent/Traffic/Pareto packetSize_ 15\n")
 	dst.write("set Agent/Traffic/Pareto burst_time_ %s\n" %(burst))
 	dst.write("set Agent/Traffic/Pareto idle_time_ %s\n" %(idle))
@@ -48,7 +49,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		ftp_traf = int(( data - pareto_traf))
 
 		nb_cycle = (burst + idle) / sim_time
-		rate = int( math.floor( ( pareto_traf / nb_cycle) / burst ) )
+		rate = int( math.floor( ( pareto_traf / nb_cycle ) / burst ) )
 
 		dst.write("set sink_%s_%s [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
