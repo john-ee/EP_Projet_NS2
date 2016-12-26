@@ -30,13 +30,14 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
 	rep = 10
-	conv = 10
+	conv = 10000
 
 	dst.write("set Agent/TCP window_ 15\nset Agent/TCP packetSize_ 15\n")
 	dst.write("set Agent/Traffic/Pareto packetSize_ 15\n")
 	dst.write("set Agent/Traffic/Pareto burst_time_ %s\n" %(burst))
 	dst.write("set Agent/Traffic/Pareto idle_time_ %s\n" %(idle))
 	dst.write("set Agent/Traffic/Pareto shape_ %s\n" %(shape))
+	dst.write("set Application/FTP set type_ FTP\n\n")
 
 	for line in src:
 		
@@ -46,6 +47,9 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		pareto_traf = int(math.floor(0.85 * data)) 
 		ftp_traf = int(( data - pareto_traf))
 
+		nb_cycle = (burst + idle) / sim_time
+		rate = int( math.floor( ( pareto_traf / nb_cycle) / burst ) )
+
 		dst.write("set sink_%s_%s [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink_%s_%s\n" %(traf[1], traf[0], traf[1]))
 		dst.write("set tcp_%s_%s [new Agent/TCP]\n" %(traf[0], traf[1]))
@@ -53,8 +57,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns connect $tcp_%s_%s $sink_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p_%s_%s [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
-		rate = pareto_traf / sim_time
-		dst.write("$p_%s_%s set rate_ %s Mb\n" %(traf[0], traf[1], rate))
+		dst.write("$p_%s_%s set rate_ %s M\n" %(traf[0], traf[1], rate))
 		dst.write("$p_%s_%s attach-agent $tcp_%s_%s\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p_%s_%s stop\"\n\n" %(fin, traf[0], traf[1]))
@@ -77,16 +80,11 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("$ns attach-agent $n%s $sink_%s_%s_%s\n" %(traf[1], traf[0], traf[1], i))
 			dst.write("$ns connect $tcp_%s_%s_%s $sink_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 
-			dst.write("set ftp_%s_%s_%s [new Application/FTP]\n" %(traf[0], traf[1], i))
-			dst.write("$ftp_%s_%s_%s attach-agent $tcp_%s_%s_%s\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-			dst.write("$ftp_%s_%s_%s set type_ FTP\n" %(traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s\"\n" %(instant, traf[0], traf[1], i, zipf * conv))
+			dst.write("set ftp_%s_%s_%s [$tcp_%s_%s_%s attach_app FTP]\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
+			dst.write("$ns at %s \"$ftp_%s_%s_%s send %s M\"\n\n" %(instant, traf[0], traf[1], i, zipf))
 
 			random_traf += zipf 
 			i+=1
-
-	dst.write("$ns at %s \"finish\"\n" %(sim_time))
-	dst.write("puts \"Starting Simulation...\"\n$ns run\n")
 
 
 src_topo = open("topo.top","r")
@@ -106,6 +104,9 @@ dest.write("}\n\n")
 topologie(src_topo, dest)
 
 trafic(src_traf, dest, 300, 0.05, 0.05, 2)
+
+dest.write("$ns at %s \"finish\"\n" %(sim_time))
+dest.write("puts \"Starting Simulation...\"\n$ns run\n")
 
 src_topo.close()
 src_traf.close()
