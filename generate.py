@@ -25,7 +25,7 @@ def topologie(src,dst):
 		dst.write("\n")
 
 
-def trafic( src, dst, sim_time, burst, idle, shape):
+def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
@@ -61,27 +61,31 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
 
-		dst.write("set tcp(%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n(%s) $tcp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
-
-		dst.write("set sink(%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n(%s) $sink(%s,%s)\n" %(traf[1], traf[0], traf[1]))
-		dst.write("$ns connect $tcp(%s,%s) $sink(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
-
-		dst.write("set ftp(%s,%s) [new Application/FTP]\n" %(traf[0], traf[1]))
-		dst.write("$ftp(%s,%s) attach-agent $tcp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
-
 		random_traf = 0
 		i = 0
-		offset = int(math.floor(ftp_traf / 1000))
 
-		print "%s %s %s" %(pareto_traf, ftp_traf, offset)
+		print "%s %s" %(pareto_traf, ftp_traf)
 
 		while random_traf < ftp_traf:
 
 			zipf = np.random.zipf(shape) 
 			instant = rand.random() * (fin - debut) + debut
-			dst.write("$ns at %s \"$ftp(%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], zipf))
+
+			if i < nb_flux:
+				dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
+				dst.write("$ns attach-agent $n(%s) $tcp(%s,%s,%s)\n" %(traf[0], traf[0], traf[1], i))
+
+				dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
+				dst.write("$ns attach-agent $n(%s) $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
+				dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
+
+				dst.write("set ftp(%s,%s,%s) [new Application/FTP]\n" %(traf[0], traf[1], i))
+				dst.write("$ftp(%s,%s,%s) attach-agent $tcp(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
+				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], i, zipf))
+
+			else:
+				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, zipf))
+			
 			random_traf += zipf 
 			i+=1
 
@@ -90,14 +94,19 @@ src_topo = open("topo.top","r")
 src_traf = open("traff.traf","r")
 dest = open("simulation.tcl","w")
 
-dest.write("set ns [new Simulator]\n\n")
+dest.write("set ns [new Simulator]\n")
+dest.write("set f [open out.tr w]\n$ns trace-all $f\n")
+dest.write("set nf [open out.nam w]\n$ns namtrace-all $nf\n")
 dest.write("proc finish {} {\n")
+dest.write("    global ns f nf\n")
+dest.write("    $ns flush-trace\n")
+dest.write("    close $f\n    close $nf\n")
 dest.write("    exit 0\n")
 dest.write("}\n\n")
 
 topologie(src_topo, dest)
 
-trafic(src_traf, dest, 300, 0.05, 0.05, 2)
+trafic(src_traf, dest, 300, 0.05, 0.05, 2, 9)
 
 dest.write("$ns at 300 \"finish\"\n")
 dest.write("puts \"Starting Simulation...\"\n$ns run\n")
