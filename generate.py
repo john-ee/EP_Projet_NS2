@@ -71,7 +71,10 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 			zipf = np.random.zipf(shape) 
 			instant = rand.random() * (fin - debut) + debut
 
-			if i < nb_flux:
+			if i > nb_flux-1:
+				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, zipf))
+
+			else:
 				dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
 				dst.write("$ns attach-agent $n(%s) $tcp(%s,%s,%s)\n" %(traf[0], traf[0], traf[1], i))
 
@@ -81,10 +84,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 				dst.write("set ftp(%s,%s,%s) [new Application/FTP]\n" %(traf[0], traf[1], i))
 				dst.write("$ftp(%s,%s,%s) attach-agent $tcp(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], i, zipf))
-
-			else:
-				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, zipf))
+				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, zipf))
 			
 			random_traf += zipf 
 			i+=1
