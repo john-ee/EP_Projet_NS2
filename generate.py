@@ -30,13 +30,13 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
 
-	dst.write("set Agent/TCP packetSize_ 1500\n")
-	dst.write("set Agent/UDP packetSize_ 1500\n")
-	dst.write("set Agent/Traffic/Pareto packetSize_ 1500\n")
-	dst.write("set Agent/Traffic/Pareto burst_time_ %s\n" %(burst))
-	dst.write("set Agent/Traffic/Pareto idle_time_ %s\n" %(idle))
-	dst.write("set Agent/Traffic/Pareto shape_ %s\n" %(shape))
-	dst.write("set Application/FTP set type_ FTP\n\n")
+	dst.write("Agent/TCP packetSize_ set 1500\n")
+	dst.write("Agent/UDP packetSize_ set 1500\n")
+	dst.write("Agent/Traffic/Pareto set packetSize_ 1500\n")
+	dst.write("Agent/Traffic/Pareto set burst_time_ %s\n" %(burst))
+	dst.write("Agent/Traffic/Pareto set idle_time_ %s\n" %(idle))
+	dst.write("Agent/Traffic/Pareto set shape_ %s\n" %(shape))
+	dst.write("Application/FTP set type_ FTP\n\n")
 
 	for line in src:
 		
