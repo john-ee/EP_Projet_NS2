@@ -91,7 +91,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 
 src_topo = open("topo.top","r")
-src_traf = open("traff.traf","r")
+src_traf = open("test.traf","r")
 dest = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
