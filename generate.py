@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import scipy.special as sps
+from scipy.stats import zipf
 import numpy as np
 import math
 import random as rand
@@ -23,6 +23,22 @@ def topologie(src,dst):
 		dst.write("$ns duplex-link $n(%s) $n(%s) %sGb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
 		dst.write("$ns queue-limit $n(%s) $n(%s) 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
+
+
+def multiple10(x):
+	mult = 100
+	cond = True
+	if x < 0:
+		return 0
+	if x < mult:
+		return mult/10
+	while cond:
+		if x > mult and x < mult*10:
+			cond = False
+		else:
+			mult = mult * 10
+	return mult/10
+
 
 
 def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
@@ -65,14 +81,16 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		i = 0
 
 		print "%s %s" %(pareto_traf, ftp_traf)
+		offset = multiple10(ftp_traf)
 
 		while random_traf < ftp_traf:
 
-			zipf = np.random.zipf(shape) 
+			r = zipf.rvs(shape, loc=offset)
+			print "%s" %(r)
 			instant = rand.random() * (fin - debut) + debut
 
 			if i > nb_flux-1:
-				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, zipf))
+				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, r))
 
 			else:
 				dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
@@ -81,12 +99,9 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 				dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
 				dst.write("$ns attach-agent $n(%s) $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
 				dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-
-				dst.write("set ftp(%s,%s,%s) [new Application/FTP]\n" %(traf[0], traf[1], i))
-				dst.write("$ftp(%s,%s,%s) attach-agent $tcp(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-				dst.write("$ns at %s \"$ftp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, zipf))
+				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, r))
 			
-			random_traf += zipf 
+			random_traf += r
 			i+=1
 
 
