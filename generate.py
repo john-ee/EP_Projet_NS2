@@ -32,10 +32,6 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	dst.write("Agent/TCP set packetSize_ 1500\n")
 	dst.write("Agent/UDP set packetSize_ 1500\n")
-	dst.write("Agent/Traffic set packetSize_ 1500\n")
-	dst.write("Agent/Traffic/Pareto set burst_time_ %s\n" %(burst))
-	dst.write("Agent/Traffic/Pareto set idle_time_ %s\n" %(idle))
-	dst.write("Agent/Traffic/Pareto set shape_ %s\n" %(shape))
 	dst.write("Application/FTP set type_ FTP\n\n")
 
 	for line in src:
@@ -56,6 +52,10 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns connect $udp($%s,$%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p(%s,%s) [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
+		dst.write("$p(%s,%s) set packetSize_ 1500\n" %(traf[0], traf[1]))
+		dst.write("$p(%s,%s) set burst_time_ %s\n" %(traf[0], traf[1], burst))
+		dst.write("$p(%s,%s) set idle_time_ %s\n" %(traf[0], traf[1], idle))
+		dst.write("$p(%s,%s) set shape_ %s\n" %(traf[0], traf[1], shape))
 		dst.write("$p(%s,%s) set rate_ %s G\n" %(traf[0], traf[1], rate))
 		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n\n" %(debut, traf[0], traf[1]))
