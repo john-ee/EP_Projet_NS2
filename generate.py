@@ -62,7 +62,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
 
 		dst.write("set tcp(%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n%s $tcp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
+		dst.write("$ns attach-agent $n(%s) $tcp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
 
 		dst.write("set sink(%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n%s $sink(%s,%s)\n" %(traf[1], traf[0], traf[1]))
