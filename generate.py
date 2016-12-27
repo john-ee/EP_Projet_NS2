@@ -20,7 +20,7 @@ def topologie(src,dst):
 			nodes.append(topo[1])
 			dst.write("set n(%s) [$ns node]\n" %(topo[1]))
 
-		dst.write("$ns duplex-link $n(%s) $n(%s) [expr %s*10]Mb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
+		dst.write("$ns duplex-link $n(%s) $n(%s) %sGb %sms DropTail\n" %(topo[0], topo[1], topo[2], topo[3]))
 		dst.write("$ns queue-limit $n(%s) $n(%s) 10\n" %(topo[0],topo[1]))
 		dst.write("\n")
 
@@ -29,12 +29,10 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	debut = math.floor(sim_time * 0.10)
 	fin = sim_time - debut
-	rep = 10
-	conv = 10000
 
-	dst.write("set Agent/TCP window_ 15\nset Agent/TCP packetSize_ 15\n")
-	dst.write("set Agent/UDP packetSize_ 15\n")
-	dst.write("set Agent/Traffic/Pareto packetSize_ 15\n")
+	dst.write("set Agent/TCP packetSize_ 1500\n")
+	dst.write("set Agent/UDP packetSize_ 1500\n")
+	dst.write("set Agent/Traffic/Pareto packetSize_ 1500\n")
 	dst.write("set Agent/Traffic/Pareto burst_time_ %s\n" %(burst))
 	dst.write("set Agent/Traffic/Pareto idle_time_ %s\n" %(idle))
 	dst.write("set Agent/Traffic/Pareto shape_ %s\n" %(shape))
@@ -43,10 +41,10 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 	for line in src:
 		
 		traf = line.rstrip('\n\r').split(" ")
-		data = int(float(traf[2]) * rep)
+		data = int(traf[2])
 
 		pareto_traf = int(math.floor(0.85 * data)) 
-		ftp_traf = int(( data - pareto_traf))
+		ftp_traf = int( data - pareto_traf)
 
 		nb_cycle = (burst + idle) / sim_time
 		rate = int( math.floor( ( pareto_traf / nb_cycle ) / burst ) )
@@ -58,14 +56,14 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns connect $udp($%s,$%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p(%s,%s) [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
-		dst.write("$p(%s,%s) set rate_ %s M\n" %(traf[0], traf[1], rate))
+		dst.write("$p(%s,%s) set rate_ %s G\n" %(traf[0], traf[1], rate))
 		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
 
 		random_traf = 0
 		i = 0
-		offset = int(math.floor(ftp_traf / rep))
+		offset = int(math.floor(ftp_traf / 1000))
 
 		print "%s %s %s" %(pareto_traf, ftp_traf, offset)
 
@@ -82,7 +80,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 			dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
 
 			dst.write("set ftp(%s,%s,%s) [$tcp(%s,%s,%s) attach_app FTP]\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-			dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s M\"\n\n" %(instant, traf[0], traf[1], i, zipf))
+			dst.write("$ns at %s \"$ftp(%s,%s,%s) send %s G\"\n\n" %(instant, traf[0], traf[1], i, zipf))
 
 			random_traf += zipf 
 			i+=1
