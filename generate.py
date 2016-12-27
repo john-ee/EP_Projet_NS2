@@ -40,7 +40,6 @@ def multiple10(x):
 	return mult/10
 
 
-
 def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 	debut = math.floor(sim_time * 0.10)
@@ -106,7 +105,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 
 src_topo = open("topo.top","r")
-src_traf = open("test.traf","r")
+src_traf = open("traff.traf","r")
 dest = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
