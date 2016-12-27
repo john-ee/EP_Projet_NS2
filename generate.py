@@ -48,8 +48,8 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
 		dst.write("set udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
-		dst.write("$ns attach-agent $n($%s) $udp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
-		dst.write("$ns connect $udp($%s,$%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("$ns attach-agent $n(%s) $udp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
+		dst.write("$ns connect $udp(%s,%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		dst.write("set p(%s,%s) [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
 		dst.write("$p(%s,%s) set packetSize_ 1500\n" %(traf[0], traf[1]))
