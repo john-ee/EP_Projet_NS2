@@ -32,7 +32,7 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 
 	dst.write("Agent/TCP set packetSize_ 1500\n")
 	dst.write("Agent/UDP set packetSize_ 1500\n")
-	dst.write("Agent/Traffic/Pareto set packetSize_ 1500\n")
+	dst.write("Agent/Traffic set packetSize_ 1500\n")
 	dst.write("Agent/Traffic/Pareto set burst_time_ %s\n" %(burst))
 	dst.write("Agent/Traffic/Pareto set idle_time_ %s\n" %(idle))
 	dst.write("Agent/Traffic/Pareto set shape_ %s\n" %(shape))
