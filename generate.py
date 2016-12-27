@@ -68,7 +68,8 @@ def trafic( src, dst, sim_time, burst, idle, shape):
 		dst.write("$ns attach-agent $n(%s) $sink(%s,%s)\n" %(traf[1], traf[0], traf[1]))
 		dst.write("$ns connect $tcp(%s,%s) $sink(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
-		dst.write("set ftp(%s,%s) [$tcp(%s,%s) attach_app FTP]\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("set ftp(%s,%s) [new Application/FTP]\n" %(traf[0], traf[1]))
+		dst.write("$ftp(%s,%s) attach-agent $tcp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
 		random_traf = 0
 		i = 0
