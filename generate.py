@@ -5,7 +5,7 @@ import numpy as np
 import math
 import random as rand
 
-def topoloMie(src,dst):
+def topologie(src,dst):
 
 	nodes = []
 
