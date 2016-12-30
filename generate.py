@@ -84,12 +84,11 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 		while random_traf < ftp_traf:
 
-			r = zipf.rvs(shape, loc=offset)
-			print "%s" %(r)
+			sent = zipf.rvs(shape) * offset
 			instant = rand.random() * (fin - debut) + debut
 
 			if i > nb_flux-1:
-				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, r))
+				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
 
 			else:
 				dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
@@ -98,9 +97,9 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 				dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
 				dst.write("$ns attach-agent $n(%s) $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
 				dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, r))
+				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, sent))
 			
-			random_traf += r
+			random_traf += sent
 			i+=1
 
 
@@ -120,7 +119,7 @@ dest.write("}\n\n")
 
 topologie(src_topo, dest)
 
-trafic(src_traf, dest, 300, 0.05, 0.05, 2, 611)
+trafic(src_traf, dest, 300, 0.05, 0.05, 2, 41)
 
 dest.write("$ns at 300 \"finish\"\n")
 dest.write("puts \"Starting Simulation...\"\n$ns run\n")
