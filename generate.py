@@ -66,13 +66,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		dst.write("$ns attach-agent $n(%s) $udp(%s,%s)\n" %(traf[0], traf[0], traf[1]))
 		dst.write("$ns connect $udp(%s,%s) $sink_udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 
-		dst.write("set p(%s,%s) [new Application/Traffic/Pareto]\n" %(traf[0], traf[1]))
-		dst.write("$p(%s,%s) set packetSize_ 1500\n" %(traf[0], traf[1]))
-		dst.write("$p(%s,%s) set burst_time_ %s\n" %(traf[0], traf[1], burst))
-		dst.write("$p(%s,%s) set idle_time_ %s\n" %(traf[0], traf[1], idle))
-		dst.write("$p(%s,%s) set shape_ %s\n" %(traf[0], traf[1], shape))
-		dst.write("$p(%s,%s) set rate_ %s G\n" %(traf[0], traf[1], rate))
-		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
+		dst.write("set p(%s,%s) [setup_pareto %s %s %s %s $udp(%s,%s)]\n" %(traf[0], traf[1], burst, idle, shape, rate, traf[0], traf[1]) )
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
 
@@ -85,7 +79,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		while random_traf < ftp_traf:
 
 			sent = zipf.rvs(shape) * offset
-			instant = rand.random() * (fin - debut) + debut
+			instant = rand.uniform(debut,fin)
 
 			if i > nb_flux-1:
 				dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
@@ -116,6 +110,16 @@ dest.write("    $ns flush-trace\n")
 dest.write("    close $f\n    close $nf\n")
 dest.write("    exit 0\n")
 dest.write("}\n\n")
+
+dest.write("proc setup_pareto {burst_time idle_time shape rate udp} {\n")
+dest.write("    set p [new Application/Traffic/Pareto]\n")
+dest.write("	$p set packetSize_ 1500\n")
+dest.write("	$p set burst_time_ burst_time\n")
+dest.write("	$p set idle_time_ idle_time\n")
+dest.write("	$p set shape_ shape\n")
+dest.write("	$p set rate_ rate G\n")
+dest.write("	$p attach-agent $udp\n")
+dest.write("	return $p\n}\n\n")
 
 topologie(src_topo, dest)
 
