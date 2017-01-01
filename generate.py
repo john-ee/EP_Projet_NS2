@@ -28,7 +28,7 @@ def topologie(src,dst):
 
 
 def multiple10(x):
-	mult = 10
+	mult = 100
 	cond = True
 	if x < mult:
 		return 1
@@ -58,13 +58,16 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		ftp_traf = int( data - pareto_traf)
 
 		nb_cycle = (burst + idle) / sim_time
-		rate = ( pareto_traf * 2 ) / sim_time
+		rate_val = ( pareto_traf * 2 ) / sim_time
 		#rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
 
-		if rate == 0:
-			print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s" %(rate, pareto_traf*2, sim_time)
-			rate = 1
-			print "New rate %s\n" %(rate)		
+		if rate_val == 0:
+			print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s" %(rate_val, pareto_traf*2, sim_time)
+			rate_val = ( pareto_traf * 2 * 1000 ) / sim_time
+			print "New rate %s\n" %(rate_val)	
+			rate = "%sm" %(rate_val)
+		else:
+			rate = "%sg" %(rate_val)	
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
@@ -77,7 +80,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		dst.write("$p(%s,%s) set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p(%s,%s) set idle_time_ %s\n" %(traf[0], traf[1], idle))
 		dst.write("$p(%s,%s) set shape_ %s\n" %(traf[0], traf[1], shape))
-		dst.write("$p(%s,%s) set rate_ %sG\n" %(traf[0], traf[1], rate))
+		dst.write("$p(%s,%s) set rate_ %s\n" %(traf[0], traf[1], rate))
 		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
@@ -90,14 +93,15 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 		while random_traf < ftp_traf:
 
-			sent = zipf.rvs(shape) * offset
+			sent_val = zipf.rvs(shape) * offset
 			instant = int(rand.uniform(debut,fin))
-			if sent == 0:
-				print "\nValeur null%s\n\n" %(sent)
+			if sent_val == 0:
+				print "\nValeur nulle sent : %s\n" %(sent_val)
+			sent = "%sg" %(sent_val)
 
-			if sent < ftp_traf:
+			if sent_val < ftp_traf and sent_val > 0:
 				if i > nb_flux-1:
-					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
+					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %s\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
 
 				else:
 					dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
@@ -106,9 +110,9 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 					dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
 					dst.write("$ns attach-agent $n(%s) $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
 					dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, sent))
+					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %s\"\n\n" %(instant, traf[0], traf[1], i, sent))
 
-				random_traf += sent
+				random_traf += sent_val
 				i+=1
 
 

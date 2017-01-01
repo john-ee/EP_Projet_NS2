@@ -1,0 +1,42 @@
+Temps d'execution de la simulation : 13.5113098621
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 0.192126989365
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 13.8309102058
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 90.3401331902
+Temps d'execution de la simulation : 177.718276978
+Temps d'execution de la simulation : 13.1878061295
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 12.7694978714
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 12.7164480686
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 13.9693989754
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 13.025908947
+Les liens les plus faibles sont:
+	1-0 avec 1 % de pertes
+	1-1 avec 1 % de pertes
+	1-2 avec 1 % de pertes
