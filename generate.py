@@ -30,8 +30,6 @@ def topologie(src,dst):
 def multiple10(x):
 	mult = 10
 	cond = True
-	if x < 0:
-		return 0
 	if x < mult:
 		return 1
 	while cond:
@@ -60,8 +58,12 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		ftp_traf = int( data - pareto_traf)
 
 		nb_cycle = (burst + idle) / sim_time
-		rate = ( ftp_traf * 2 ) / sim_time
+		rate = ( pareto_traf * 2 ) / sim_time
 		#rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
+
+		if rate == 0:
+				print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s\n" %(rate, pareto_traf*2, sim_time)
+				rate = 1
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
@@ -89,6 +91,8 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 			sent = zipf.rvs(shape) * offset
 			instant = int(rand.uniform(debut,fin))
+			if sent == 0:
+				print "\nValeur null%s\n\n" %(sent)
 
 			if sent < ftp_traf:
 				if i > nb_flux-1:

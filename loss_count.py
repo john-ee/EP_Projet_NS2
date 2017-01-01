@@ -8,7 +8,7 @@ pertes = []
 total = []
 for i in range(25):
 	pertes.append([i] * 25)
-	recus.append([i] * 25)
+	total.append([i] * 25)
 
 for line in src:
 	event = line.rstrip('\n\r').split(" ")
@@ -22,18 +22,19 @@ valmax = [0]*3
 
 for i in range(len(pertes)):
 	for j in range(len(pertes[i])):
-		if pertes[i][j] / total[i][j] > valmax[0]:
-			valmax[0] = pertes[i][j] / total[i][j]
-			imax[0] = i
-			jmax[0] = j
-		elif pertes[i][j] / total[i][j] > valmax[1]:
-			valmax[1] = pertes[i][j] / total[i][j]
-			imax[1] = i
-			jmax[1] = j
-		elif pertes[i][j] / total[i][j] > valmax[2]:
-			valmax[2] = pertes[i][j] / total[i][j]
-			imax[2] = i
-			jmax[2] = j
+		if total[i][j] != 0:
+			if pertes[i][j] / total[i][j] > valmax[0]:
+				valmax[0] = pertes[i][j] / total[i][j]
+				imax[0] = i
+				jmax[0] = j
+			elif pertes[i][j] / total[i][j] > valmax[1]:
+				valmax[1] = pertes[i][j] / total[i][j]
+				imax[1] = i
+				jmax[1] = j
+			elif pertes[i][j] / total[i][j] > valmax[2]:
+				valmax[2] = pertes[i][j] / total[i][j]
+				imax[2] = i
+				jmax[2] = j
 
 
 dst  = open("info.txt", "a")
