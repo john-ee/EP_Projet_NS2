@@ -40,3 +40,5 @@ Les liens les plus faibles sont:
 	1-0 avec 1 % de pertes
 	1-1 avec 1 % de pertes
 	1-2 avec 1 % de pertes
+Temps d'execution de la simulation : 84.4093580246
+Temps d'execution de la simulation : 55.9767680168

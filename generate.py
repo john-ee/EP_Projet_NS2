@@ -65,9 +65,9 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 			print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s" %(rate_val, pareto_traf*2, sim_time)
 			rate_val = ( pareto_traf * 2 * 1000 ) / sim_time
 			print "New rate %s\n" %(rate_val)	
-			rate = "%sm" %(rate_val)
+			rate = rate_val * pow(10,9)
 		else:
-			rate = "%sg" %(rate_val)	
+			rate = rate_val * pow(10,6)	
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
@@ -97,7 +97,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 			instant = int(rand.uniform(debut,fin))
 			if sent_val == 0:
 				print "\nValeur nulle sent : %s\n" %(sent_val)
-			sent = "%sg" %(sent_val)
+			sent = sent_val * pow(10,9)
 
 			if sent_val < ftp_traf and sent_val > 0:
 				if i > nb_flux-1:
