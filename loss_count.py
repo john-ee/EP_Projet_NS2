@@ -2,7 +2,7 @@
 
 import numpy as np
 
-src = open("out.tr","r")
+src = open("loss.tr","r")
 
 pertes = []
 total = []

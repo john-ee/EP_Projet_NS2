@@ -33,7 +33,7 @@ def multiple10(x):
 	if x < 0:
 		return 0
 	if x < mult:
-		return mult/10
+		return 1
 	while cond:
 		if x > mult and x < mult*10:
 			cond = False
@@ -60,7 +60,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		ftp_traf = int( data - pareto_traf)
 
 		nb_cycle = (burst + idle) / sim_time
-		rate = ftp_traf * 2 / sim_time
+		rate = ( ftp_traf * 2 ) / sim_time
 		#rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
@@ -108,7 +108,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 
 src_topo = open("topo.top","r")
-src_traf = open("test.traf","r")
+src_traf = open("traff.traf","r")
 dest = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
