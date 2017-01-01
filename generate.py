@@ -62,8 +62,9 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		#rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
 
 		if rate == 0:
-				print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s\n" %(rate, pareto_traf*2, sim_time)
-				rate = 1
+			print "\nValeur nulle %s avec pareto*2 : %s sim_time: %s" %(rate, pareto_traf*2, sim_time)
+			rate = 1
+			print "New rate %s\n" %(rate)		
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
