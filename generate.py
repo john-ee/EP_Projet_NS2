@@ -60,8 +60,8 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		ftp_traf = int( data - pareto_traf)
 
 		nb_cycle = (burst + idle) / sim_time
-		#rate = ftp_traf * 2 / sim_time
-		rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
+		rate = ftp_traf * 2 / sim_time
+		#rate = int ( ( pareto_traf / nb_cycle ) / burst ) 
 
 		dst.write("set sink_udp(%s,%s) [new Agent/UDP]\n" %(traf[0], traf[1]))
 		dst.write("$ns attach-agent $n(%s) $sink_udp(%s,%s)\n" %(traf[1], traf[0], traf[1]))
@@ -74,7 +74,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 		dst.write("$p(%s,%s) set burst_time_ %s\n" %(traf[0], traf[1], burst))
 		dst.write("$p(%s,%s) set idle_time_ %s\n" %(traf[0], traf[1], idle))
 		dst.write("$p(%s,%s) set shape_ %s\n" %(traf[0], traf[1], shape))
-		dst.write("$p(%s,%s) set rate_ %s\n" %(traf[0], traf[1], rate))
+		dst.write("$p(%s,%s) set rate_ %sG\n" %(traf[0], traf[1], rate))
 		dst.write("$p(%s,%s) attach-agent $udp(%s,%s)\n" %(traf[0], traf[1], traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) start\"\n" %(debut, traf[0], traf[1]))
 		dst.write("$ns at %s \"$p(%s,%s) stop\"\n\n" %(fin, traf[0], traf[1]))
@@ -92,7 +92,7 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 
 			if sent < ftp_traf:
 				if i > nb_flux-1:
-					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %s\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
+					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i%nb_flux, sent))
 
 				else:
 					dst.write("set tcp(%s,%s,%s) [new Agent/TCP]\n" %(traf[0], traf[1], i))
@@ -101,14 +101,14 @@ def trafic( src, dst, sim_time, burst, idle, shape, nb_flux):
 					dst.write("set sink(%s,%s,%s) [new Agent/TCPSink]\n" %(traf[0], traf[1], i))
 					dst.write("$ns attach-agent $n(%s) $sink(%s,%s,%s)\n" %(traf[1], traf[0], traf[1], i))
 					dst.write("$ns connect $tcp(%s,%s,%s) $sink(%s,%s,%s)\n" %(traf[0], traf[1], i, traf[0], traf[1], i))
-					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %s\"\n\n" %(instant, traf[0], traf[1], i, sent))
+					dst.write("$ns at %s \"$tcp(%s,%s,%s) send %sG\"\n\n" %(instant, traf[0], traf[1], i, sent))
 
 				random_traf += sent
 				i+=1
 
 
 src_topo = open("topo.top","r")
-src_traf = open("traff.traf","r")
+src_traf = open("test.traf","r")
 dest = open("simulation.tcl","w")
 
 dest.write("set ns [new Simulator]\n")
@@ -131,7 +131,7 @@ dest.write("	set next 3\n")
 dest.write("	set from_node [$n($i) getidnode]\n")
 dest.write("	set to_node [$n($j) getidnode]\n")
 dest.write("	$monitor_queue($i,$j) instvar size_ pkts_ barrivals_ bdepartures_ parrivals_ pdepartures_ bdrops_ pdrops_\n")
-dest.write("	puts $loss_monitor \"$now $from_node $to_node $pdrops_ &pkts_\"\n")
+dest.write("	puts $loss_monitor \"$now $from_node $to_node $pdrops_ $pdepartures_\"\n")
 dest.write("	$ns after $next \"record $i $j\"\n")
 dest.write("}\n\n")
 
