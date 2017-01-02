@@ -1,27 +1,28 @@
 #!/usr/bin/python
 
-import numpy as np
-
 src = open("loss.tr","r")
 
 pertes = []
 total = []
-for i in range(25):
-	pertes.append([i] * 25)
-	total.append([i] * 25)
+for i in range(26):
+	pertes.append([i] * 26)
+	total.append([i] * 26)
+	for j in range (0,26):
+		total[i][j] = 0
+
 
 for line in src:
 	event = line.rstrip('\n\r').split(" ")
 
-	pertes[int(event[1])][int(event[2])]+= int(event[3])
-	total[int(event[1])][int(event[2])]+= int(event[4])
+	pertes[int(event[0])][int(event[1])] = int(event[2])
+	total[int(event[0])][int(event[1])] = int(event[3])
 
-dst  = open("info.txt", "a")
+dst  = open("loss_results.txt", "w")
 
 dst.write("Pourcentage de pertes par liens dans les deux sens :\n")
-for i in [0,25]:
-	for j in [i,25]:
-		if total[i][j] + total[j][i] != 0:
+for i in range(26):
+	for j in range(i+1,26):
+		if ( total[i][j] + total[j][i] != 0 ) :
 			pourcent = (pertes[i][j]+pertes[j][i]) / (total[i][j]+total[j][i])
 			dst.write("\tLien %s-%s : %s\n" %(i,j,pourcent))
 src.close()
