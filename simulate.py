@@ -6,5 +6,5 @@ import os
 timer = open("info.txt", "a")
 start = time.time()
 os.system("ns simulation.tcl")
-timer.write("Temps d'execution de la simulation : %s\n" %(time.time() - start))
+timer.write("Temps d'execution de la simulation : %sh\n" %(time.time() - start) / 3600)
 timer.close()

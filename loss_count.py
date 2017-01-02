@@ -16,33 +16,13 @@ for line in src:
 	pertes[int(event[1])][int(event[2])]+= int(event[3])
 	total[int(event[1])][int(event[2])]+= int(event[4])
 
-imax = [0]*3
-jmax = [0]*3
-valmax = [0]*3
-
-for i in range(len(pertes)):
-	for j in range(len(pertes[i])):
-		if total[i][j] != 0:
-			if pertes[i][j] / total[i][j] > valmax[0]:
-				valmax[0] = pertes[i][j] / total[i][j]
-				imax[0] = i
-				jmax[0] = j
-			elif pertes[i][j] / total[i][j] > valmax[1]:
-				valmax[1] = pertes[i][j] / total[i][j]
-				imax[1] = i
-				jmax[1] = j
-			elif pertes[i][j] / total[i][j] > valmax[2]:
-				valmax[2] = pertes[i][j] / total[i][j]
-				imax[2] = i
-				jmax[2] = j
-
-
 dst  = open("info.txt", "a")
 
-dst.write("Les liens les plus faibles sont:\n")
-dst.write("\t%s-%s avec %s %% de pertes\n" %(imax[0], jmax[0], valmax[0]))
-dst.write("\t%s-%s avec %s %% de pertes\n" %(imax[1], jmax[1], valmax[1]))
-dst.write("\t%s-%s avec %s %% de pertes\n" %(imax[2], jmax[2], valmax[2]))
-
+dst.write("Pourcentage de pertes par liens dans les deux sens :\n")
+for i in [0,25]:
+	for j in [i,25]:
+		if total[i][j] + total[j][i] != 0:
+			pourcent = (pertes[i][j]+pertes[j][i]) / (total[i][j]+total[j][i])
+			dst.write("\tLien %s-%s : %s\n" %(i,j,pourcent))
 src.close()
 dst.close()
